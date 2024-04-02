@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'cadastro_usuario.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cadastro',
       theme: ThemeData(
         primaryColor: Colors.teal,
-        hintColor: Colors.purpleAccent,
+        hintColor: Colors.tealAccent,
         fontFamily: 'Roboto',
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           headline1: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.teal),
           bodyText1: TextStyle(fontSize: 16.0, color: Colors.black87),
           button: TextStyle(fontSize: 18.0, color: Colors.white),
@@ -32,6 +33,8 @@ class CadastroUsuarioPage extends StatelessWidget {
   String _email = '';
   String _senha = '';
 
+  CadastroUsuarioPage({super.key});
+
   void _cadastrar() {
     if (_formKey.currentState!.validate()) {
       // Aqui você faria o request para o backend com os dados do formulário
@@ -45,7 +48,8 @@ class CadastroUsuarioPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastro'),
+        title: const Text('Cadastrar Usuário'),
+        backgroundColor: Colors.teal, // Define a cor da AppBar como roxo
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -53,7 +57,7 @@ class CadastroUsuarioPage extends StatelessWidget {
         ),
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Form(
               key: _formKey,
               child: Column(
@@ -64,9 +68,9 @@ class CadastroUsuarioPage extends StatelessWidget {
                     child: TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Nome',
-                        labelStyle: TextStyle(color: Colors.teal),
-                        prefixIcon: Icon(Icons.person, color: Colors.teal), // Ícone no início do campo de texto
-                        focusedBorder: OutlineInputBorder(
+                        labelStyle: const TextStyle(color: Colors.teal),
+                        prefixIcon: const Icon(Icons.person, color: Colors.teal), // Ícone no início do campo de texto
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.teal),
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -84,15 +88,15 @@ class CadastroUsuarioPage extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.8, // Define a largura dos inputs
                     child: TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Colors.teal),
-                        prefixIcon: Icon(Icons.email, color: Colors.teal), // Ícone no início do campo de texto
-                        focusedBorder: OutlineInputBorder(
+                        labelStyle: const TextStyle(color: Colors.teal),
+                        prefixIcon: const Icon(Icons.email, color: Colors.teal), // Ícone no início do campo de texto
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.teal),
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -113,15 +117,15 @@ class CadastroUsuarioPage extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.8, // Define a largura dos inputs
                     child: TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Senha',
-                        labelStyle: TextStyle(color: Colors.teal),
-                        prefixIcon: Icon(Icons.lock, color: Colors.teal), // Ícone no início do campo de texto
-                        focusedBorder: OutlineInputBorder(
+                        labelStyle: const TextStyle(color: Colors.teal),
+                        prefixIcon: const Icon(Icons.lock, color: Colors.teal), // Ícone no início do campo de texto
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.teal),
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -143,7 +147,7 @@ class CadastroUsuarioPage extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.5, // Define a largura do botão
                     child: ElevatedButton(
@@ -151,7 +155,7 @@ class CadastroUsuarioPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal, // Altera a cor de fundo do botão
                       ),
-                      child: Text(
+                      child: const Text(
                         'Cadastrar',
                         style: TextStyle(color: Colors.white), // Altera a cor do texto do botão
                       ),
