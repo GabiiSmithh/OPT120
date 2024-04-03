@@ -26,6 +26,54 @@ app.get('/', (req, res) => {
   res.send('Servidor Rodando Corretamente!');
 });
 
+app.get('/usuario', (req, res) => {
+  // Query SQL para selecionar todos os usuários
+  const sql = 'SELECT * FROM Usuario';
+
+  // Executa a consulta
+  conexao.query(sql, (error, results) => {
+    if (error) {
+      // Se houver um erro, envia uma resposta de erro
+      return res.status(500).json({ error: 'Erro ao executar a consulta no banco de dados' });
+    }
+
+    // Se a consulta for bem-sucedida, envia os resultados como resposta
+    res.json(results);
+  });
+});
+
+app.get('/atividade', (req, res) => {
+  // Query SQL para selecionar todos os usuários
+  const sql = 'SELECT * FROM Atividade';
+
+  // Executa a consulta
+  conexao.query(sql, (error, results) => {
+    if (error) {
+      // Se houver um erro, envia uma resposta de erro
+      return res.status(500).json({ error: 'Erro ao executar a consulta no banco de dados' });
+    }
+
+    // Se a consulta for bem-sucedida, envia os resultados como resposta
+    res.json(results);
+  });
+});
+
+app.get('/usuario_atividade', (req, res) => {
+  // Query SQL para selecionar todos os usuários
+  const sql = 'SELECT * FROM Usuario_Atividade';
+
+  // Executa a consulta
+  conexao.query(sql, (error, results) => {
+    if (error) {
+      // Se houver um erro, envia uma resposta de erro
+      return res.status(500).json({ error: 'Erro ao executar a consulta no banco de dados' });
+    }
+
+    // Se a consulta for bem-sucedida, envia os resultados como resposta
+    res.json(results);
+  });
+});
+
 // Inicia o servidor
 const PORT = 3024;
 app.listen(PORT, () => {
