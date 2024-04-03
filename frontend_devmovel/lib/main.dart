@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'cadastro_usuario.dart'; // Importar o arquivo da tela de cadastro de usuário
 import 'cadastro_atividade.dart'; // Importar o arquivo da tela de cadastro de atividade
 import 'atividades_cadastradas.dart'; // Importar o arquivo da tela de atividades cadastradas
+import 'cadastro_usuario_atividade.dart'; // Importar o arquivo da tela de cadastro de usuário e atividade
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/cadastro_usuario': (context) => CadastroUsuarioPage(), // Adicionando rota para a tela de cadastro de usuário
         '/cadastro_atividade': (context) => CadastroAtividadePage(), // Adicionando rota para a tela de cadastro de atividade
         '/atividades_cadastradas': (context) => AtividadesCadastradasPage(), // Adicionando rota para a tela de atividades cadastradas
+        '/cadastro_usuario_atividade': (context) => CadastroUsuarioAtividade(), // Adicionando rota para a tela de cadastro de usuário e atividade
       },
     );
   }
@@ -69,6 +71,14 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/cadastro_atividade');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.assignment_ind), // Ícone para cadastro de usuário e atividade
+              title: const Text('Cadastro de Usuário e Atividade'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/cadastro_usuario_atividade');
               },
             ),
             ListTile(

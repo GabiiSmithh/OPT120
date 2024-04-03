@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class CadastroUsuarioPage extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -48,7 +49,10 @@ class CadastroUsuarioPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastrar Usuário'),
+        title: const Text(
+          'Cadastrar Usuário',
+          style: TextStyle(color: Colors.white), // Altera a cor do texto para branco
+          ),
         backgroundColor: Colors.teal, // Define a cor da AppBar como roxo
       ),
       body: Container(

@@ -53,7 +53,10 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro de Atividade'),
+        title: const Text(
+          'Cadastro de Atividade',
+          style: TextStyle(color: Colors.white), // Altera a cor do texto para branco
+        ),
         backgroundColor: Colors.teal, // Altera a cor da barra superior
       ),
       body: Container(
