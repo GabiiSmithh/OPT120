@@ -1,4 +1,6 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const rotasAtividade = require('./rotas/rotas_atividade');
 const rotasUsuario = require('./rotas/rotas_usuario');
@@ -9,6 +11,10 @@ const app = express();
 app.get('/', (req, res) => {
   res.send('Servidor Rodando Corretamente!');
 });
+
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json());
+app.use(cors());
 
 app.use(rotasAtividade);
 app.use(rotasUsuario);

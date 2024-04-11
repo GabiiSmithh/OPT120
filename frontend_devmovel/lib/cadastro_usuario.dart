@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,22 +27,46 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
 class CadastroUsuarioPage extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _nome = '';
-  String _email = '';
-  String _senha = '';
+  late final TextEditingController _nomeController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _senhaController;
 
-  CadastroUsuarioPage({super.key});
+  CadastroUsuarioPage({Key? key})
+      : _nomeController = TextEditingController(),
+        _emailController = TextEditingController(),
+        _senhaController = TextEditingController(),
+        super(key: key);
 
-  void _cadastrar() {
+  void _cadastrar() async {
     if (_formKey.currentState!.validate()) {
-      // Aqui você faria o request para o backend com os dados do formulário
-      print('Nome: $_nome');
-      print('Email: $_email');
-      print('Senha: $_senha');
+      final String nome = _nomeController.text;
+      final String email = _emailController.text;
+      final String senha = _senhaController.text;
+
+      try {
+        final response = await http.post(
+          Uri.parse('http://localhost:3024/usuario'),
+          headers: <String, String>{
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: {
+            'nome': nome,
+            'email': email,
+            'senha': senha,
+          },
+        );
+
+        if (response.statusCode == 201) {
+          print('Cadastro realizado com sucesso!');
+        } else {
+          print('Falha ao cadastrar: ${response.body}');
+        }
+      } catch (e) {
+        print('Erro ao realizar cadastro: $e');
+      }
     }
   }
 
@@ -51,13 +76,13 @@ class CadastroUsuarioPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Cadastrar Usuário',
-          style: TextStyle(color: Colors.white), // Altera a cor do texto para branco
-          ),
-        backgroundColor: Colors.teal, // Define a cor da AppBar como roxo
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.teal,
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[200], // Define a cor de fundo desejada
+          color: Colors.grey[200],
         ),
         child: Center(
           child: Padding(
@@ -68,12 +93,13 @@ class CadastroUsuarioPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.8, // Define a largura dos inputs
+                    width: MediaQuery.of(context).size.width * 0.8,
                     child: TextFormField(
+                      controller: _nomeController,
                       decoration: InputDecoration(
                         labelText: 'Nome',
                         labelStyle: const TextStyle(color: Colors.teal),
-                        prefixIcon: const Icon(Icons.person, color: Colors.teal), // Ícone no início do campo de texto
+                        prefixIcon: const Icon(Icons.person, color: Colors.teal),
                         focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.teal),
                         ),
@@ -87,19 +113,17 @@ class CadastroUsuarioPage extends StatelessWidget {
                         }
                         return null;
                       },
-                      onChanged: (value) {
-                        _nome = value;
-                      },
                     ),
                   ),
                   const SizedBox(height: 20.0),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.8, // Define a largura dos inputs
+                    width: MediaQuery.of(context).size.width * 0.8,
                     child: TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle: const TextStyle(color: Colors.teal),
-                        prefixIcon: const Icon(Icons.email, color: Colors.teal), // Ícone no início do campo de texto
+                        prefixIcon: const Icon(Icons.email, color: Colors.teal),
                         focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.teal),
                         ),
@@ -116,19 +140,17 @@ class CadastroUsuarioPage extends StatelessWidget {
                         }
                         return null;
                       },
-                      onChanged: (value) {
-                        _email = value;
-                      },
                     ),
                   ),
                   const SizedBox(height: 20.0),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.8, // Define a largura dos inputs
+                    width: MediaQuery.of(context).size.width * 0.8,
                     child: TextFormField(
+                      controller: _senhaController,
                       decoration: InputDecoration(
                         labelText: 'Senha',
                         labelStyle: const TextStyle(color: Colors.teal),
-                        prefixIcon: const Icon(Icons.lock, color: Colors.teal), // Ícone no início do campo de texto
+                        prefixIcon: const Icon(Icons.lock, color: Colors.teal),
                         focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.teal),
                         ),
@@ -146,22 +168,19 @@ class CadastroUsuarioPage extends StatelessWidget {
                         }
                         return null;
                       },
-                      onChanged: (value) {
-                        _senha = value;
-                      },
                     ),
                   ),
                   const SizedBox(height: 20.0),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.5, // Define a largura do botão
+                    width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: _cadastrar,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal, // Altera a cor de fundo do botão
+                        backgroundColor: Colors.teal,
                       ),
                       child: const Text(
                         'Cadastrar',
-                        style: TextStyle(color: Colors.white), // Altera a cor do texto do botão
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

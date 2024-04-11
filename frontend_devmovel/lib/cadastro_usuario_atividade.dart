@@ -21,7 +21,7 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Formulário',
+          'Cadastro de Usuário e Atividade',
           style: TextStyle(color: Colors.white), // Altera a cor do texto para branco
         ),
         backgroundColor: Colors.teal, // Define a cor da AppBar como teal
