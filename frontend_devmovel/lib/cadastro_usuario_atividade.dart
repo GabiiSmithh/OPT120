@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class CadastroUsuarioAtividade extends StatefulWidget {
   @override
@@ -8,13 +10,67 @@ class CadastroUsuarioAtividade extends StatefulWidget {
 }
 
 class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
-  String? selectedUser; // Permit null value
-  String? selectedActivity; // Permit null value
-  DateTime? selectedDate; // Selected date
-  double? nota; // Entered grade
+  Map<String, dynamic>? selectedUser;
+  Map<String, dynamic>? selectedActivity;
+  DateTime? selectedDate;
+  double? nota;
 
-  List<String> users = ['Anelly', 'Gabriela', 'Winicius'];
-  List<String> activities = ['Atividade 1', 'Atividade 2', 'Atividade 3'];
+  List<Map<String, dynamic>> users = [];
+  List<Map<String, dynamic>> activities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsers();
+    fetchActivities();
+  }
+
+  Future<void> fetchUsers() async {
+    try {
+      var response =
+          await http.get(Uri.parse('http://localhost:3024/usuario'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          users = data.map<Map<String, dynamic>>((user) {
+            return {
+              'id': user['ID_USUARIO'],
+              'nome': user['NOME'],
+            };
+          }).toList();
+        });
+      } else {
+        print('Failed to load users: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching users: $e');
+    }
+  }
+
+  Future<void> fetchActivities() async {
+    try {
+      var response =
+          await http.get(Uri.parse('http://localhost:3024/atividade'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          activities = data.map<Map<String, dynamic>>((activity) {
+            return {
+              'id': activity['ID_ATIVIDADE'],
+              'titulo': activity['TITULO'],
+              'descricao': activity['DESC'],
+            };
+          }).toList();
+        });
+      } else {
+        print('Failed to load activities: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching activities: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,17 +78,17 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
       appBar: AppBar(
         title: Text(
           'Cadastro de Usuário e Atividade',
-          style: TextStyle(color: Colors.white), // Altera a cor do texto para branco
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal, // Define a cor da AppBar como teal
+        backgroundColor: Colors.teal,
       ),
-      backgroundColor: Colors.grey[200], // Set background color to gray
+      backgroundColor: Colors.grey[200],
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<Map<String, dynamic>>(
               value: selectedUser,
               onChanged: (value) {
                 setState(() {
@@ -40,9 +96,9 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
                 });
               },
               items: users.map((user) {
-                return DropdownMenuItem<String>(
+                return DropdownMenuItem<Map<String, dynamic>>(
                   value: user,
-                  child: Text(user),
+                  child: Text(user['nome']),
                 );
               }).toList(),
               decoration: InputDecoration(
@@ -51,7 +107,7 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
               ),
             ),
             SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<Map<String, dynamic>>(
               value: selectedActivity,
               onChanged: (value) {
                 setState(() {
@@ -59,9 +115,9 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
                 });
               },
               items: activities.map((activity) {
-                return DropdownMenuItem<String>(
+                return DropdownMenuItem<Map<String, dynamic>>(
                   value: activity,
-                  child: Text(activity),
+                  child: Text('${activity['titulo']} - ${activity['descricao']}'),
                 );
               }).toList(),
               decoration: InputDecoration(
@@ -99,10 +155,10 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
                     return Theme(
                       data: ThemeData.light().copyWith(
                         textTheme: TextTheme(
-                          bodyText1: TextStyle(color: Colors.white), // Altera a cor do texto
+                          bodyText1: TextStyle(color: Colors.white),
                         ),
                         colorScheme: ColorScheme.light(
-                          primary: Colors.teal, // Altera a cor do botão de seleção de data
+                          primary: Colors.teal,
                         ),
                       ),
                       child: child!,
@@ -116,26 +172,62 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Define a cor de fundo do botão
+                backgroundColor: Colors.teal,
               ),
               child: Text(
                 selectedDate != null
                     ? 'Data selecionada: ${selectedDate.toString().substring(0, 10)}'
                     : 'Selecionar Data',
-                style: TextStyle(color: Colors.white), // Altera a cor do texto
+                style: TextStyle(color: Colors.white),
               ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (selectedUser != null &&
                     selectedActivity != null &&
                     selectedDate != null &&
                     nota != null) {
-                  print('Usuário selecionado: $selectedUser');
-                  print('Atividade selecionada: $selectedActivity');
-                  print('Data selecionada: $selectedDate');
-                  print('Nota selecionada: $nota');
+                  Map<String, dynamic> requestBody = {
+                    'usuarioId': selectedUser!['id'].toString(),
+                    'atividadeId': selectedActivity!['id'].toString(),
+                    'dataEntrega': selectedDate!.toString(),
+                    'nota': nota!.toString(),
+                  };
+
+                  try {
+                    var response = await http.post(
+                      Uri.parse('http://localhost:3024/usuario-atividade'),
+                      body: requestBody,
+                    );
+
+                    if (response.statusCode == 200) {
+                      print('Request successful');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Sucesso!'),
+                            content: Text('Atividade vinculada com sucesso!'),
+                            backgroundColor: Colors.white,
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      print(
+                          'Request failed with status: ${response.statusCode}');
+                    }
+                  } catch (e) {
+                    print('Error: $e');
+                  }
                 } else {
                   showDialog(
                     context: context,
@@ -143,8 +235,10 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
                       return AlertDialog(
                         title: Text('Aviso'),
                         content: Text(
-                            'Por favor, selecione um usuário, uma atividade, uma data e insira uma nota.'),
-                        backgroundColor: Colors.white, // Altera a cor de fundo do diálogo para grey[200]
+                          'Por favor, selecione um usuário, uma atividade, uma data e insira uma nota.',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        backgroundColor: Colors.white,
                         actions: [
                           TextButton(
                             onPressed: () {
@@ -159,11 +253,11 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Define a cor de fundo do botão
+                backgroundColor: Colors.teal,
               ),
               child: Text(
                 'Vincular',
-                style: TextStyle(color: Colors.white), // Altera a cor do texto
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -171,4 +265,10 @@ class _CadastroUsuarioAtividadeState extends State<CadastroUsuarioAtividade> {
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: CadastroUsuarioAtividade(),
+  ));
 }

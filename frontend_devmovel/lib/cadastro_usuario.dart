@@ -40,7 +40,7 @@ class CadastroUsuarioPage extends StatelessWidget {
         _senhaController = TextEditingController(),
         super(key: key);
 
-  void _cadastrar() async {
+  void _cadastrar(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final String nome = _nomeController.text;
       final String email = _emailController.text;
@@ -60,7 +60,7 @@ class CadastroUsuarioPage extends StatelessWidget {
         );
 
         if (response.statusCode == 201) {
-          print('Cadastro realizado com sucesso!');
+          _showCadastroSuccessDialog(context);
         } else {
           print('Falha ao cadastrar: ${response.body}');
         }
@@ -68,6 +68,27 @@ class CadastroUsuarioPage extends StatelessWidget {
         print('Erro ao realizar cadastro: $e');
       }
     }
+  }
+
+  void _showCadastroSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Cadastro Concluído!"),
+          content: Text("Seu cadastro foi realizado com sucesso!"),
+          backgroundColor: Colors.white, // Alterando a cor de fundo para branco
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -174,7 +195,7 @@ class CadastroUsuarioPage extends StatelessWidget {
                   Container(
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
-                      onPressed: _cadastrar,
+                      onPressed: () => _cadastrar(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                       ),

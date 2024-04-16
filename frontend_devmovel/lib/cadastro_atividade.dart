@@ -52,6 +52,27 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
     }
   }
 
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Atividade Salva!"),
+          content: Text("Sua atividade foi salva com sucesso!"),
+          backgroundColor: Colors.white, // Alterando a cor de fundo para branco
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,7 +141,6 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // Implement the logic to make the HTTP POST request
                     final url = Uri.parse('http://localhost:3024/atividade');
                     final response = await http.post(
                       url,
@@ -131,13 +151,10 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
                       },
                     );
 
-                    // Check if the request was successful
-                    if (response.statusCode == 200) {
-                      // Do something with the response, e.g., show a success message
-                      print('Activity saved successfully!');
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                      _showSuccessDialog(context);
                     } else {
-                      // Handle any errors, e.g., show an error message
-                      print('Failed to save activity. Error: ${response.statusCode}');
+                      print('Falha ao salvar a atividade. Erro: ${response.statusCode}');
                     }
                   },
                   style: ElevatedButton.styleFrom(
