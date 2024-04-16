@@ -1,79 +1,93 @@
-// Importando os módulos necessários
 const express = require('express');
 const router = express.Router();
 
 const connection = require('../ConexaoSQL.js');
 
-// Rota para obter todas as atividade
-router.get('/atividade', (req, res) => {
-  connection.query('SELECT * FROM Atividade', (err, results) => {
-    if (err) {
-      res.status(500).json({ erro: err.message });
-      return;
-    }
-    res.json(results);
-  });
+// Rota para obter todas as atividades
+router.get('/atividade', async (req, res) => {
+  try {
+    connection.query('SELECT * FROM Atividade', (err, results) => {
+      if (err) {
+        throw err;
+      }
+      res.json(results);
+    });
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 });
 
 // Rota para obter uma atividade específica por ID
-router.get('/atividade/:id', (req, res) => {
+router.get('/atividade/:id', async (req, res) => {
   const id = req.params.id;
-  connection.query('SELECT * FROM Atividade WHERE ID_ATIVIDADE = ?', id, (err, results) => {
-    if (err) {
-      res.status(500).json({ erro: err.message });
-      return;
-    }
-    if (results.length === 0) {
-      res.status(404).json({ mensagem: "Atividade não encontrada" });
-      return;
-    }
-    res.json(results[0]);
-  });
+  try {
+    connection.query('SELECT * FROM Atividade WHERE ID_ATIVIDADE = ?', id, (err, results) => {
+      if (err) {
+        throw err;
+      }
+      if (results.length === 0) {
+        res.status(404).json({ mensagem: "Atividade não encontrada" });
+        return;
+      }
+      res.json(results[0]);
+    });
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 });
 
 // Rota para criar uma nova atividade
-router.post('/atividade', (req, res) => {
+router.post('/atividade', async (req, res) => {
   const { TITULO, DESC, DATA } = req.body;
-  connection.query('INSERT INTO Atividade (TITULO, DESC, DATA) VALUES (?, ?, ?)', [TITULO, DESC, DATA], (err, result) => {
-    if (err) {
-      res.status(500).json({ erro: err.message });
-      return;
-    }
-    res.status(201).json({ mensagem: 'Atividade criada com sucesso', id: result.insertId });
-  });
+  try {
+    connection.query("INSERT INTO Atividade (TITULO, `DESC`, DATA) VALUES (?, ?, ?)", [TITULO, DESC, DATA], (err, result) => {
+      if (err) {
+        throw err;
+      }
+      res.status(201).json({ mensagem: 'Atividade criada com sucesso', id: result.insertId });
+    });
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 });
 
 // Rota para atualizar uma atividade existente
-router.put('/atividade/:id', (req, res) => {
+router.put('/atividade/:id', async (req, res) => {
   const id = req.params.id;
   const { TITULO, DESC, DATA } = req.body;
-  connection.query('UPDATE Atividade SET TITULO = ?, DESC = ?, DATA = ? WHERE ID_ATIVIDADE = ?', [TITULO, DESC, DATA, id], (err, result) => {
-    if (err) {
-      res.status(500).json({ erro: err.message });
-      return;
-    }
-    if (result.affectedRows === 0) {
-      res.status(404).json({ mensagem: "Atividade não encontrada" });
-      return;
-    }
-    res.json({ mensagem: 'Atividade atualizada com sucesso' });
-  });
+  try {
+    connection.query('UPDATE Atividade SET TITULO = ?, DESC = ?, DATA = ? WHERE ID_ATIVIDADE = ?', [TITULO, DESC, DATA, id], (err, result) => {
+      if (err) {
+        throw err;
+      }
+      if (result.affectedRows === 0) {
+        res.status(404).json({ mensagem: "Atividade não encontrada" });
+        return;
+      }
+      res.json({ mensagem: 'Atividade atualizada com sucesso' });
+    });
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 });
 
 // Rota para excluir uma atividade
-router.delete('/atividade/:id', (req, res) => {
+router.delete('/atividade/:id', async (req, res) => {
   const id = req.params.id;
-  connection.query('DELETE FROM Atividade WHERE ID_ATIVIDADE = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ erro: err.message });
-      return;
-    }
-    if (result.affectedRows === 0) {
-      res.status(404).json({ mensagem: "Atividade não encontrada" });
-      return;
-    }
-    res.json({ mensagem: 'Atividade excluída com sucesso' });
-  });
+  try {
+    connection.query('DELETE FROM Atividade WHERE ID_ATIVIDADE = ?', id, (err, result) => {
+      if (err) {
+        throw err;
+      }
+      if (result.affectedRows === 0) {
+        res.status(404).json({ mensagem: "Atividade não encontrada" });
+        return;
+      }
+      res.json({ mensagem: 'Atividade excluída com sucesso' });
+    });
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 });
 
 module.exports = router;

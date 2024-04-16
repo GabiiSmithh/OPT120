@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -33,6 +34,8 @@ class CadastroAtividadePage extends StatefulWidget {
 
 class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
   DateTime _selectedDate = DateTime.now();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -55,13 +58,13 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
       appBar: AppBar(
         title: const Text(
           'Cadastro de Atividade',
-          style: TextStyle(color: Colors.white), // Altera a cor do texto para branco
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal, // Altera a cor da barra superior
+        backgroundColor: Colors.teal,
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[200], // Define a cor de fundo desejada
+          color: Colors.grey[200],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -69,26 +72,28 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5, // Define a largura do TextField
-                child: const TextField(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: TextField(
+                  controller: _titleController,
                   decoration: InputDecoration(
                     labelText: 'Título',
                     hintText: 'Digite o título da atividade',
                     border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal), // Altera a cor da linha
+                      borderSide: BorderSide(color: Colors.teal),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5, // Define a largura do TextField
-                child: const TextField(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: TextField(
+                  controller: _descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Descrição',
                     hintText: 'Digite a descrição da atividade',
                     border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal), // Altera a cor da linha
+                      borderSide: BorderSide(color: Colors.teal),
                     ),
                   ),
                 ),
@@ -112,17 +117,35 @@ class _CadastroAtividadePageState extends State<CadastroAtividadePage> {
               ),
               const SizedBox(height: 20),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4, // Define a largura do ElevatedButton
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Implementar a lógica de salvar
+                  onPressed: () async {
+                    // Implement the logic to make the HTTP POST request
+                    final url = Uri.parse('http://localhost:3024/atividade');
+                    final response = await http.post(
+                      url,
+                      body: {
+                        'TITULO': _titleController.text,
+                        'DESC': _descriptionController.text,
+                        'DATA': _selectedDate.toIso8601String(),
+                      },
+                    );
+
+                    // Check if the request was successful
+                    if (response.statusCode == 200) {
+                      // Do something with the response, e.g., show a success message
+                      print('Activity saved successfully!');
+                    } else {
+                      // Handle any errors, e.g., show an error message
+                      print('Failed to save activity. Error: ${response.statusCode}');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal, // Altera a cor de fundo do botão
+                    backgroundColor: Colors.teal,
                   ),
                   child: const Text(
                     'Salvar',
-                    style: TextStyle(color: Colors.white), // Altera a cor do texto do botão
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
