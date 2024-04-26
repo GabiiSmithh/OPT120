@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'cadastro_usuario.dart'; // Import the file for user registration screen
-import 'cadastro_atividade.dart'; // Import the file for activity registration screen
-import 'cadastro_usuario_atividade.dart'; // Import the file for user and activity registration screen
-import 'lista_atividades.dart'; // Import the file for the activity list screen
-import 'lista_usuarios.dart'; // Import the file for the user list screen
+import 'cadastro_usuario.dart'; // Importe o arquivo para a tela de registro de usuário
+import 'cadastro_atividade.dart'; // Importe o arquivo para a tela de registro de atividade
+import 'cadastro_usuario_atividade.dart'; // Importe o arquivo para a tela de registro de usuário e atividade
+import 'lista_atividades.dart'; // Importe o arquivo para a tela de lista de atividades
+import 'lista_usuarios.dart'; // Importe o arquivo para a tela de lista de usuários
+import 'lista_usuario_atividade.dart'; // Importe o arquivo para a tela de lista de usuários e atividades
 
 void main() {
   runApp(const MyApp());
@@ -24,8 +25,9 @@ class MyApp extends StatelessWidget {
         '/cadastro_usuario': (context) => CadastroUsuarioPage(),
         '/cadastro_atividade': (context) => CadastroAtividadePage(),
         '/cadastro_usuario_atividade': (context) => CadastroUsuarioAtividade(),
-        '/lista_atividades': (context) => ListaAtividadeScreen(), // Add route for activity list screen
-        '/lista_usuarios': (context) => ListaUsuarioScreen(), // Add route for user list screen
+        '/lista_atividades': (context) => ListaAtividadeScreen(),
+        '/lista_usuarios': (context) => ListaUsuarioScreen(),
+        '/lista_usuario_atividade': (context) => ListaUsuarioAtividade(),
       },
     );
   }
@@ -41,7 +43,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.teal,
       ),
       drawer: Drawer(
         child: ListView(
@@ -85,18 +87,26 @@ class MyHomePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.list),
-              title: const Text('Lista de Atividades'), // Add a new list tile for activity list screen
+              title: const Text('Lista de Atividades'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/lista_atividades'); // Navigate to activity list screen
+                Navigator.pushNamed(context, '/lista_atividades');
               },
             ),
             ListTile(
               leading: const Icon(Icons.people),
-              title: const Text('Lista de Usuários'), // Add a new list tile for user list screen
+              title: const Text('Lista de Usuários'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/lista_usuarios'); // Navigate to user list screen
+                Navigator.pushNamed(context, '/lista_usuarios');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.group_work),
+              title: const Text('Lista de Usuários e Atividades'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/lista_usuario_atividade');
               },
             ),
           ],

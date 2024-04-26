@@ -49,9 +49,20 @@ class _ListaUsuarioScreenState extends State<ListaUsuarioScreen> {
     print('Editando usuário: ${usuario.nome}');
   }
 
-  void _excluirUsuario(Usuario usuario) {
-    // Implemente a lógica para excluir o usuário aqui
-    print('Excluindo usuário: ${usuario.nome}');
+  void _excluirUsuario(Usuario usuario) async {
+    final response = await http
+        .delete(Uri.parse('http://localhost:3024/usuario/${usuario.id}'));
+    if (response.statusCode == 200) {
+      // Remover o usuário da lista local após a exclusão bem-sucedida, se necessário
+      setState(() {
+        // Remove o usuário da lista local _usuarios
+        _usuarios = _usuarios.then(
+            (usuarios) => usuarios.where((u) => u.id != usuario.id).toList());
+      });
+      print('Usuário excluído com sucesso: ${usuario.nome}');
+    } else {
+      print('Falha ao excluir usuário: ${usuario.nome}');
+    }
   }
 
   @override

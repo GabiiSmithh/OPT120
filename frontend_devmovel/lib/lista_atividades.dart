@@ -6,9 +6,13 @@ class Atividade {
   final int id;
   final String titulo;
   final String desc;
-  final String data;
+  DateTime data;
 
-  Atividade({required this.id, required this.titulo, required this.desc, required this.data});
+  Atividade(
+      {required this.id,
+      required this.titulo,
+      required this.desc,
+      required this.data});
 
   factory Atividade.fromJson(Map<String, dynamic> json) {
     return Atividade(
@@ -29,9 +33,89 @@ class ListaAtividadeScreen extends StatefulWidget {
 
 class _ListaAtividadeScreenState extends State<ListaAtividadeScreen> {
   late Future<List<Atividade>> _atividades;
+  late final Map<int, bool> _isEditing = {};
+
+  void startEditing(int id) {
+    setState(() {
+      _isEditing[id] = true;
+    });
+  }
+
+  void stopEditing(int id) {
+    setState(() {
+      _isEditing[id] = false;
+    });
+    _atividades =
+        _getAtividades(); // Atualiza a lista de atividades ao cancelar a edição
+  }
 
   Future<List<Atividade>> _getAtividades() async {
-    final response = await http.get(Uri.parse('http://localhost:3024/atividade'));
+    final response =
+        await http.get(Uri.parse('http://localhost:3024/atividade'));
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      return jsonResponse.map((data) => Atividade.fromJson(data)).toList();
+    } else {
+      throw Exception('Falha ao carregar as atividades');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _atividades = _getAtividades();
+  }
+
+  void editarAtividade(Atividade atividade) {
+    startEditing(atividade.id);
+  }
+
+  void removerAtividade(int id) async {
+    final response =
+        await http.delete(Uri.parse('http://localhost:3024/atividade/$id'));
+    if (response.statusCode == 200) {
+      setState(() {
+        _atividades = _getAtividades();
+      });
+      print('Atividade removida com sucesso');
+    } else {
+      print('Erro ao remover atividade');
+    }
+  }
+
+  void salvarEdicao(Atividade atividade) async {
+    print('Salvando edição da atividade ${atividade.id}');
+
+    final Uri uri =
+        Uri.parse('http://localhost:3024/atividade/${atividade.id}');
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
+    final Map<String, dynamic> body = {
+      'titulo': atividade.titulo,
+      'descricao': atividade.desc,
+      'data':
+          '${atividade.data.year}-${atividade.data.month.toString().padLeft(2, '0')}-${atividade.data.day.toString().padLeft(2, '0')} ${atividade.data.hour.toString().padLeft(2, '0')}:${atividade.data.minute.toString().padLeft(2, '0')}:${atividade.data.second.toString().padLeft(2, '0')}',
+    };
+
+    try {
+      final response =
+          await http.put(uri, headers: headers, body: json.encode(body));
+      if (response.statusCode == 200) {
+        print('Dados da atividade atualizados com sucesso');
+        setState(() {
+          _atividades = _getAtividades(); // Atualiza a lista de atividades
+        });
+        stopEditing(atividade.id);
+      } else {
+        print('Falha ao atualizar dados da atividade');
+      }
+    } catch (error) {
+      print('Erro ao fazer requisição PUT: $error');
+    }
+  }
+
+  Future<List<Atividade>> _getAtividade() async {
+    final response =
+        await http.get(Uri.parse('http://localhost:3024/atividade'));
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((data) => Atividade.fromJson(data)).toList();
@@ -41,7 +125,8 @@ class _ListaAtividadeScreenState extends State<ListaAtividadeScreen> {
   }
 
   Future<void> _deleteAtividade(int id) async {
-    final response = await http.delete(Uri.parse('http://localhost:3024/atividade/$id'));
+    final response =
+        await http.delete(Uri.parse('http://localhost:3024/atividade/$id'));
     if (response.statusCode == 200) {
       // Atualize a lista de atividades após a exclusão
       setState(() {
@@ -50,12 +135,6 @@ class _ListaAtividadeScreenState extends State<ListaAtividadeScreen> {
     } else {
       throw Exception('Falha ao excluir a atividade');
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _atividades = _getAtividades();
   }
 
   @override
