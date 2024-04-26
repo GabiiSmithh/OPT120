@@ -6,7 +6,7 @@ const connection = require('../ConexaoSQL.js');
 // Rota para obter todas as atividades
 router.get('/atividade', async (req, res) => {
   try {
-    connection.query('SELECT * FROM Atividade', (err, results) => {
+    connection.query('SELECT * FROM Atividade WHERE CANCELAMENTO = ?', 'N', (err, results) => {
       if (err) {
         throw err;
       }
@@ -21,7 +21,7 @@ router.get('/atividade', async (req, res) => {
 router.get('/atividade/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    connection.query('SELECT * FROM Atividade WHERE ID_ATIVIDADE = ?', id, (err, results) => {
+    connection.query('SELECT * FROM Atividade WHERE ID_ATIVIDADE = ? AND CANCELAMENTO = ?', [id, 'N'], (err, results) => {
       if (err) {
         throw err;
       }
@@ -40,7 +40,7 @@ router.get('/atividade/:id', async (req, res) => {
 router.post('/atividade', async (req, res) => {
   const { TITULO, DESC, DATA } = req.body;
   try {
-    connection.query("INSERT INTO Atividade (TITULO, `DESC`, DATA) VALUES (?, ?, ?)", [TITULO, DESC, DATA], (err, result) => {
+    connection.query("INSERT INTO Atividade (TITULO, `DESC`, `DATA`, CANCELAMENTO) VALUES (?, ?, ?, ?)", [TITULO, DESC, DATA, 'N'], (err, result) => {
       if (err) {
         throw err;
       }
@@ -56,7 +56,7 @@ router.put('/atividade/:id', async (req, res) => {
   const id = req.params.id;
   const { TITULO, DESC, DATA } = req.body;
   try {
-    connection.query('UPDATE Atividade SET TITULO = ?, DESC = ?, DATA = ? WHERE ID_ATIVIDADE = ?', [TITULO, DESC, DATA, id], (err, result) => {
+    connection.query('UPDATE Atividade SET TITULO = ?, `DESC` = ?, `DATA` = ? WHERE ID_ATIVIDADE = ?', [TITULO, DESC, DATA, id], (err, result) => {
       if (err) {
         throw err;
       }
@@ -75,7 +75,7 @@ router.put('/atividade/:id', async (req, res) => {
 router.delete('/atividade/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    connection.query('DELETE FROM Atividade WHERE ID_ATIVIDADE = ?', id, (err, result) => {
+    connection.query('UPDATE Atividade SET CANCELAMENTO = ? WHERE ID_ATIVIDADE = ?', ['S', id], (err, result) => {
       if (err) {
         throw err;
       }

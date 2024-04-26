@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
 const connection = require('../ConexaoSQL.js');
 
 // Rota para obter todos os usuários
 router.get('/usuario', (req, res) => {
   try {
-    connection.query('SELECT * FROM Usuario', (err, results) => {
+    connection.query('SELECT * FROM Usuario WHERE cancelamento = ?', 'N', (err, results) => {
       if (err) {
         res.status(500).json({ erro: err.message });
         return;
@@ -22,8 +21,7 @@ router.get('/usuario', (req, res) => {
 router.post('/usuario', (req, res) => {
   try {
     const { nome, email, senha } = req.body;
-    console.log(req.body);
-    connection.query('INSERT INTO Usuario (NOME, EMAIL, SENHA) VALUES (?, ?, ?)', [nome, email, senha], (err, result) => {
+    connection.query('INSERT INTO Usuario (NOME, EMAIL, SENHA, cancelamento) VALUES (?, ?, ?, ?)', [nome, email, senha, 'N'], (err, result) => {
       if (err) {
         res.status(500).json({ erro: err.message });
         return;
@@ -58,12 +56,11 @@ router.put('/usuario/:id', (req, res) => {
 
 // Rota para excluir um usuário
 router.delete('/usuario/:id', (req, res) => {
+  const id = req.params.id;
   try {
-    const id = req.params.id;
-    connection.query('DELETE FROM Usuario WHERE ID_USUARIO = ?', id, (err, result) => {
+    connection.query('UPDATE Usuario SET cancelamento = ? WHERE ID_USUARIO = ?', ['S', id], (err, result) => {
       if (err) {
-        res.status(500).json({ erro: err.message });
-        return;
+        throw err;
       }
       if (result.affectedRows === 0) {
         res.status(404).json({ mensagem: "Usuário não encontrado" });
@@ -72,7 +69,7 @@ router.delete('/usuario/:id', (req, res) => {
       res.json({ mensagem: 'Usuário excluído com sucesso' });
     });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao excluir usuário: ' + error.message });
+    res.status(500).json({ erro: error.message });
   }
 });
 

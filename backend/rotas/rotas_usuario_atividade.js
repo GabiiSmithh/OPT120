@@ -4,7 +4,7 @@ const connection = require('../ConexaoSQL.js');
 
 router.get('/usuario-atividade', (req, res) => {
   try {
-    connection.query('SELECT * FROM Usuario_Atividade', (err, results) => {
+    connection.query('SELECT * FROM Usuario_Atividade WHERE cancelamento = ?', 'N', (err, results) => {
       if (err) {
         console.error('Error fetching usuario-atividade:', err);
         res.status(500).json({ erro: 'Erro ao buscar usuário-atividade' });
@@ -22,7 +22,7 @@ router.get('/usuario-atividade/:usuarioId/:atividadeId', (req, res) => {
   const usuarioId = req.params.usuarioId;
   const atividadeId = req.params.atividadeId;
   try {
-    connection.query('SELECT * FROM Usuario_Atividade WHERE `USUARIO.ID` = ? AND `ATIVIDADE.ID` = ?', [usuarioId, atividadeId], (err, results) => {
+    connection.query('SELECT * FROM Usuario_Atividade WHERE `USUARIO.ID` = ? AND `ATIVIDADE.ID` = ? AND cancelamento = ?', [usuarioId, atividadeId, 'N'], (err, results) => {
       if (err) {
         console.error('Error fetching usuario-atividade by ID:', err);
         res.status(500).json({ erro: 'Erro ao buscar relação usuário-atividade' });
@@ -42,9 +42,8 @@ router.get('/usuario-atividade/:usuarioId/:atividadeId', (req, res) => {
 
 router.post('/usuario-atividade', (req, res) => {
   const { usuarioId, atividadeId, dataEntrega, nota } = req.body;
-  console.log(req.body)
   try {
-    connection.query('INSERT INTO Usuario_Atividade (`USUARIO.ID`, `ATIVIDADE.ID`, DATA_ENTREGA, NOTA) VALUES (?, ?, ?, ?)', [usuarioId, atividadeId, dataEntrega, nota], (err, result) => {
+    connection.query('INSERT INTO Usuario_Atividade (`USUARIO.ID`, `ATIVIDADE.ID`, DATA_ENTREGA, NOTA, cancelamento) VALUES (?, ?, ?, ?, ?)', [usuarioId, atividadeId, dataEntrega, nota, 'N'], (err, result) => {
       if (err) {
         console.error('Error creating usuario-atividade:', err);
         res.status(500).json({ erro: 'Erro ao criar relação usuário-atividade' });
@@ -85,7 +84,7 @@ router.delete('/usuario-atividade/:usuarioId/:atividadeId', (req, res) => {
   const usuarioId = req.params.usuarioId;
   const atividadeId = req.params.atividadeId;
   try {
-    connection.query('DELETE FROM Usuario_Atividade WHERE `USUARIO.ID` = ? AND `ATIVIDADE.ID` = ?', [usuarioId, atividadeId], (err, result) => {
+    connection.query('UPDATE Usuario_Atividade SET cancelamento = ? WHERE `USUARIO.ID` = ? AND `ATIVIDADE.ID` = ?', ['S', usuarioId, atividadeId], (err, result) => {
       if (err) {
         console.error('Error deleting usuario-atividade:', err);
         res.status(500).json({ erro: 'Erro ao excluir relação usuário-atividade' });
